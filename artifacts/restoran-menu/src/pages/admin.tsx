@@ -16,7 +16,7 @@ import { QRCodeCanvas } from "qrcode.react";
 const API_BASE = "/api";
 
 type Tab = "dashboard" | "menu" | "categories" | "tables" | "settings";
-type Lang = "tr" | "en" | "or" | "am";
+type Lang = "en" | "am";
 type AdminLang = "en" | "am";
 
 const T: Record<string, Record<AdminLang, string>> = {
@@ -104,7 +104,7 @@ const T: Record<string, Record<AdminLang, string>> = {
   changing:          { en: "Saving…",                            am: "እያስቀምጡ..."              },
 };
 
-interface LangMap { tr: string; en: string; or: string; am: string; }
+interface LangMap { en: string; am: string; }
 interface MenuItem { id: string; name: LangMap; description: LangMap; price: number; category: string; image: string; hidden?: boolean; }
 interface Category { id: string; name: LangMap; order: number; }
 interface Table { id: string; number: number; location: string; status: string; activeOrderCount: number; }
@@ -673,7 +673,7 @@ function MenuTab({ lang }: { lang: AdminLang }) {
                     </div>
 
                     <span className="hidden sm:block text-xs text-slate-400 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-lg flex-shrink-0 capitalize max-w-[90px] truncate">
-                      {catName(categories.find(c => c.id === item.category) || { id: item.category, name: { tr: item.category, en: item.category, or: item.category, am: item.category }, order: 0 })}
+                      {catName(categories.find(c => c.id === item.category) || { id: item.category, name: { en: item.category, am: item.category }, order: 0 })}
                     </span>
 
                     <span className="font-bold text-[#C1440E] text-sm flex-shrink-0 w-16 text-right">
@@ -789,13 +789,13 @@ function MenuItemForm({ categories, initialData, onSave, onCancel, isSaving, lan
     }
   }
 
-  const catName = (cat: Category) => cat.name?.[lang] || cat.name?.en || cat.name?.tr || cat.id;
+  const catName = (cat: Category) => cat.name?.[lang] || cat.name?.en || cat.id;
 
   function handleSave() {
     const base = nameEn || nameAm || `item-${Date.now()}`;
     const id = initialData?.id || base.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 48) || `item-${Date.now()}`;
-    const nameMap: LangMap = { en: nameEn, am: nameAm, tr: initialData?.name?.tr || nameEn, or: initialData?.name?.or || "" };
-    const descMap: LangMap = { en: descEn, am: descAm, tr: initialData?.description?.tr || descEn, or: initialData?.description?.or || "" };
+    const nameMap: LangMap = { en: nameEn, am: nameAm };
+    const descMap: LangMap = { en: descEn, am: descAm };
     onSave({ id, name: nameMap, description: descMap, price: Number(price), category, image });
   }
 
@@ -1063,7 +1063,7 @@ function CategoriesTab({ lang }: { lang: AdminLang }) {
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editCat, setEditCat]   = useState<Category | null>(null);
-  const [form, setForm]         = useState({ id: "", tr: "", en: "", or: "", am: "" });
+  const [form, setForm]         = useState({ id: "", en: "", am: "" });
 
   const { data: categories = [] } = useQuery<Category[]>({ queryKey: ["admin-categories"], queryFn: async () => { const r = await fetch(`${API_BASE}/categories`); return r.json(); }, placeholderData: INITIAL_CATEGORIES as unknown as Category[], staleTime: 30_000 });
   const saveMutation = useMutation({
@@ -1078,9 +1078,9 @@ function CategoriesTab({ lang }: { lang: AdminLang }) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-categories"] })
   });
 
-  function openAdd() { setEditCat(null); setForm({ id: "", tr: "", en: "", or: "", am: "" }); setShowForm(true); }
+  function openAdd() { setEditCat(null); setForm({ id: "", en: "", am: "" }); setShowForm(true); }
 
-  const catName = (cat: Category) => cat.name?.[lang] || cat.name?.en || cat.name?.tr || cat.id;
+  const catName = (cat: Category) => cat.name?.[lang] || cat.name?.en || cat.id;
 
   return (
     <div className="max-w-2xl space-y-4">
@@ -1153,7 +1153,7 @@ function CategoriesTab({ lang }: { lang: AdminLang }) {
                   onClick={() => {
                     const base = form.en || form.am || `cat-${Date.now()}`;
                     const id = editCat?.id || base.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "").slice(0, 48) || `cat-${Date.now()}`;
-                    saveMutation.mutate({ id, name: { tr: form.en, en: form.en, or: "", am: form.am }, order: editCat?.order || categories.length + 1 });
+                    saveMutation.mutate({ id, name: { en: form.en, am: form.am }, order: editCat?.order || categories.length + 1 });
                   }}
                   disabled={saveMutation.isPending || !form.en}
                   className="flex items-center gap-2 bg-[#C1440E] hover:bg-[#a83a0c] text-white px-5 py-2.5 rounded-xl font-semibold text-sm disabled:opacity-40 transition-colors touch-manipulation"
@@ -1201,7 +1201,7 @@ function CategoriesTab({ lang }: { lang: AdminLang }) {
                     onClick={() => {
                       if (editCat?.id === cat.id && showForm) { setShowForm(false); setEditCat(null); return; }
                       setEditCat(cat);
-                      setForm({ id: cat.id, tr: cat.name.tr, en: cat.name.en, or: cat.name.or, am: cat.name.am });
+                      setForm({ id: cat.id, en: cat.name.en, am: cat.name.am });
                       setShowForm(true);
                     }}
                     className={cn(

@@ -1,6 +1,6 @@
 import { INITIAL_CATEGORIES, INITIAL_MENU } from "./data/initial-data.js";
 
-export interface LangMap { en: string; am: string; }
+export interface LangMap { en: string; am: string; tr?: string; or?: string; }
 export interface MenuItem { id: string; name: LangMap; description: LangMap; price: number; category: string; image: string; hidden: boolean; }
 export interface Category { id: string; name: LangMap; order: number; }
 export interface Table { id: string; number: number; location: string; status: string; activeOrderCount: number; }
