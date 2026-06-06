@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "AL-RISALA Restoran Menüsü"
+version = "1.0.0"
+id = "artifacts/restoran-menu"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24236
+
+[services.development]
+run = "pnpm --filter @workspace/restoran-menu run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/restoran-menu", "run", "build" ]
+publicDir = "artifacts/restoran-menu/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24236"
+BASE_PATH = "/"
