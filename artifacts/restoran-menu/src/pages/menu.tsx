@@ -227,12 +227,6 @@ function MenuContent({ tableId }: { tableId: string }) {
 
           <p className="relative text-[#D4AF37]/70 text-[10px] tracking-[0.35em] font-bold mb-2">مطعم</p>
 
-          {restaurantLogo && (
-            <div className="relative w-20 h-20 rounded-full overflow-hidden border-2 border-[#D4AF37]/40 shadow-lg mb-2 bg-white/5">
-              <img src={restaurantLogo} alt="Logo" className="w-full h-full object-contain p-1" fetchPriority="high" />
-            </div>
-          )}
-
           <h1 className="relative font-serif text-3xl font-bold text-white tracking-[0.15em] uppercase drop-shadow-lg">AL-RISALA</h1>
           <p className="relative text-[#D4AF37]/90 text-sm font-bold tracking-[0.3em] mt-1">الرسالة</p>
 
