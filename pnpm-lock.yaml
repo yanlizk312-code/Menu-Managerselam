@@ -403,6 +403,10 @@ importers:
         version: 3.25.76
 
   artifacts/restoran-menu:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.107.0
+        version: 2.107.0
     devDependencies:
       '@hookform/resolvers':
         specifier: ^3.10.0

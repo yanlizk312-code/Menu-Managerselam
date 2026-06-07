@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { QRCodeCanvas } from "qrcode.react";
+import { supabase } from "@/lib/supabase";
 
 const API_BASE = "/api";
 
@@ -21,10 +22,12 @@ type AdminLang = "en" | "am";
 
 const T: Record<string, Record<AdminLang, string>> = {
   loginTitle:        { en: "Admin Login",                        am: "አስተዳዳሪ መግቢያ"              },
-  loginSub:          { en: "Enter your PIN",                     am: "PIN ያስገቡ"                 },
+  loginSub:          { en: "Enter your email and password",      am: "ኢሜልና የይለፍ ቃልዎን ያስገቡ"    },
   loginBtn:          { en: "Login →",                            am: "ግባ →"                     },
-  verifying:         { en: "Verifying...",                       am: "እያረጋገጡ..."                },
-  wrongPin:          { en: "Wrong PIN. Try again.",              am: "ስህተት PIN። እንደገና ሞክሩ።"    },
+  verifying:         { en: "Signing in...",                      am: "እየገባ..."                  },
+  wrongPin:          { en: "Invalid email or password.",         am: "ኢሜል ወይም የይለፍ ቃል ስህተት።"  },
+  emailLabel:        { en: "Email",                              am: "ኢሜል"                     },
+  passwordLabel:     { en: "Password",                           am: "የይለፍ ቃል"                 },
   backHome:          { en: "← Back to Home",                    am: "← ወደ ዋና ገጽ"              },
   logout:            { en: "Logout",                             am: "ውጣ"                       },
   dashboard:         { en: "Dashboard",                          am: "ዳሽቦርድ"                   },
@@ -124,6 +127,16 @@ function clearToken() { try { localStorage.removeItem("admin_token"); } catch {}
 function authFetch(url: string, options: RequestInit = {}) {
   return fetch(url, { ...options, headers: { ...options.headers as Record<string, string>, "Authorization": `Bearer ${getToken()}`, "Content-Type": "application/json" } });
 }
+
+async function signInWithSupabase(email: string, password: string): Promise<{ token: string } | null> {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data.session) return null;
+  return { token: "admin-token-alrisala" };
+}
+
+async function signOutSupabase() {
+  await supabase.auth.signOut();
+}
 async function uploadImage(file: File): Promise<string> {
   const form = new FormData();
   form.append("image", file);
@@ -165,7 +178,8 @@ function t(key: string, lang: AdminLang): string {
 
 /* ═══════════════════════ LOGIN PAGE ═══════════════════════ */
 export default function AdminPage() {
-  const [pin, setPin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLogged, setIsLogged] = useState(() => !!getToken());
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -178,20 +192,15 @@ export default function AdminPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const res = await fetch(`${API_BASE}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ role: "admin", pin })
-    });
+    setError("");
+    const result = await signInWithSupabase(email, password);
     setLoading(false);
-    if (res.ok) {
-      const { token } = await res.json();
-      storeToken(token);
+    if (result) {
+      storeToken(result.token);
       setIsLogged(true);
-      setError("");
     } else {
       setError(t("wrongPin", lang));
-      setPin("");
+      setPassword("");
     }
   };
 
@@ -229,16 +238,32 @@ export default function AdminPage() {
                 <h2 className="text-xl font-bold text-[#1B2A4A]">{t("loginTitle", lang)}</h2>
                 <p className="text-stone-400 text-sm mt-1">{t("loginSub", lang)}</p>
               </div>
-              <form onSubmit={handleLogin} className="space-y-4">
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  value={pin}
-                  onChange={e => setPin(e.target.value)}
-                  placeholder="• • • •"
-                  className="w-full border-2 border-stone-200 focus:border-[#C1440E] bg-stone-50 text-center text-4xl tracking-[0.6em] text-[#1B2A4A] rounded-2xl py-5 outline-none transition-colors font-bold placeholder:text-stone-300 placeholder:tracking-[0.5em] placeholder:text-2xl"
-                  autoFocus
-                />
+              <form onSubmit={handleLogin} className="space-y-3">
+                <div>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1.5 uppercase tracking-wide">{t("emailLabel", lang)}</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    placeholder="admin@example.com"
+                    className="w-full border-2 border-stone-200 focus:border-[#C1440E] bg-stone-50 text-[#1B2A4A] rounded-2xl px-4 py-3.5 outline-none transition-colors text-sm"
+                    autoFocus
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-stone-500 mb-1.5 uppercase tracking-wide">{t("passwordLabel", lang)}</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full border-2 border-stone-200 focus:border-[#C1440E] bg-stone-50 text-[#1B2A4A] rounded-2xl px-4 py-3.5 outline-none transition-colors text-sm"
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
                 <AnimatePresence>
                   {error && (
                     <motion.div
@@ -253,8 +278,8 @@ export default function AdminPage() {
                 </AnimatePresence>
                 <button
                   type="submit"
-                  disabled={loading || !pin}
-                  className="w-full bg-[#C1440E] hover:bg-[#a83a0c] active:bg-[#a83a0c] text-white font-semibold py-4 rounded-2xl transition-colors disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg shadow-[#C1440E]/20 touch-manipulation"
+                  disabled={loading || !email || !password}
+                  className="w-full bg-[#C1440E] hover:bg-[#a83a0c] active:bg-[#a83a0c] text-white font-semibold py-4 rounded-2xl transition-colors disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg shadow-[#C1440E]/20 touch-manipulation mt-1"
                 >
                   {loading ? <><Circle className="w-4 h-4 animate-spin" />{t("verifying", lang)}</> : t("loginBtn", lang)}
                 </button>
@@ -269,7 +294,7 @@ export default function AdminPage() {
     );
   }
 
-  return <AdminDashboard lang={lang} updateLang={updateLang} onLogout={() => { clearToken(); setIsLogged(false); navigate("/"); }} />;
+  return <AdminDashboard lang={lang} updateLang={updateLang} onLogout={async () => { await signOutSupabase(); clearToken(); setIsLogged(false); navigate("/"); }} />;
 }
 
 /* ═══════════════════════ LAYOUT ═══════════════════════ */
