@@ -233,7 +233,7 @@ function MenuContent({ tableId }: { tableId: string }) {
           </div>
 
           {restaurantLogo ? (
-            <div className="relative w-full overflow-hidden" style={{ aspectRatio: "2.5 / 1", maxHeight: "272px" }}>
+            <div className="relative w-full overflow-hidden" style={{ aspectRatio: "2.3 / 1", maxHeight: "300px" }}>
               <img
                 key={restaurantLogo}
                 src={restaurantLogo}

@@ -1,23 +1,38 @@
 ---
-name: Logo header banner (square→wide)
-description: How the customer menu header fills edge-to-edge with a square logo, no blur, no crop
+name: Logo header banner (decouple text size from header height)
+description: How the customer menu header shows food + gold AL-RISALA text, and why the source is a tall 2:1 banner
 ---
 
-# Square logo in a wide header
+# Customer menu header banner
 
-The customer menu header (`menu.tsx`) must show the AL-RISALA logo edge-to-edge with no
-empty sides, no blur, and no cropping of the emblem. The source logo is square (~1:1),
-which cannot satisfy all three at once via CSS alone.
+The customer menu header (`menu.tsx`, the `restaurantLogo` block) shows a food photo with
+a dark scrim and large gold "AL-RISALA" wordmark + "RESTAURANT" subtitle. Displayed with
+`object-fit: cover` inside a div whose `aspectRatio` is tuned for height.
 
-**Decision:** pre-process the square logo into a wide banner (ratio ~1.84:1) using a
-mirrored edge-extension, then display it with `object-fit: cover` at that aspect ratio.
+## The core trap: text size is coupled to header height
+With a single cover image, shrinking the container `aspectRatio` (making the header taller)
+zooms the image to fill height, so the **gold text gets bigger too**. The user repeatedly
+asked for "bigger area, same text size" — impossible with a short source image via CSS alone.
 
-**How to apply:** extract the left/right food-only strips of the square logo (~26% width,
-emblem is centered), `flop()` (horizontal flip) each, resize to side panels (~42% each),
-and composite the full logo in the center. The flip makes the seam at the center-logo edge
-seamless (mirror reflection). Done with `sharp` as a one-off script; upload result via
-`POST /api/upload/logo` (Bearer `admin-token-alrisala`) which stores it in Supabase.
+**Decision:** make the SOURCE banner tall (ratio ~2.0, 1840x920), with the text sized for the
+desired on-screen width. Then keep the display container ratio >= source ratio (e.g. 2.3–2.5).
+In that regime `cover` is **width-driven** (scale = containerWidth/1840, constant), so the text
+on-screen size is FIXED regardless of header height — changing `aspectRatio` only reveals more
+or less food top/bottom. This fully decouples header height from text size. Smaller display
+ratio = taller header; text never changes as long as ratio stays >= ~2.0.
 
-**Why:** user explicitly rejected both blur-fill (sides looked dark/empty) and object-cover
-on the raw square (cropped the top مطعم arch and bottom الرسالة calligraphy). A genuinely
-wide image is the only way to get full-bleed + full-emblem + no-blur simultaneously.
+## How to regenerate the banner
+- Generator script: `make-banner.mjs` at workspace ROOT. Composites a transparent SVG overlay
+  (dark radial scrim + gold emblem rings/cloche/cutlery + AL-RISALA + RESTAURANT) over the
+  clean food photo with `sharp`.
+- Base food photo: `attached_assets/food-bg.png` (CLEAN food, no logo). Do NOT use
+  `al-risala-banner.png` — it has an old ghost logo/border baked in.
+- `sharp` is NOT an app dep: `pnpm add -w sharp`, run `node make-banner.mjs`, then
+  `pnpm remove -w sharp`. Only DejaVu Serif/Sans fonts exist (no Arabic). generateImage renders
+  text unreliably — that's why text is SVG vector, not AI.
+- Upload result: `curl -s -X POST http://localhost:80/api/upload/logo -H "Authorization: Bearer admin-token-alrisala" -F "image=@attached_assets/al-risala-logo.png"`
+  → Supabase logos bucket, persists to app_settings key `logo`, returns a `?v=timestamp` cache-buster.
+
+**Why:** user rejected blur-fill and bright photos; settled on darkened food + large gold text,
+and iterated many times on header height while demanding the text stay the same size. The tall
+source is the only clean way to satisfy both (no letterbox bands, no side-crop of the wordmark).
