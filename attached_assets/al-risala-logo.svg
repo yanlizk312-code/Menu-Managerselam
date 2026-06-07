@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1840" height="1000" viewBox="0 0 1840 1000">
+  <defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fbe7a6"/>
+    <stop offset="35%" stop-color="#e7c45c"/>
+    <stop offset="65%" stop-color="#caa12f"/>
+    <stop offset="100%" stop-color="#a9821c"/>
+  </linearGradient>
+  <linearGradient id="goldText" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#fdf0c0"/>
+    <stop offset="45%" stop-color="#e9c659"/>
+    <stop offset="100%" stop-color="#b98b1f"/>
+  </linearGradient>
+  <radialGradient id="bg" cx="50%" cy="42%" r="75%">
+    <stop offset="0%" stop-color="#2a2018"/>
+    <stop offset="45%" stop-color="#1a130d"/>
+    <stop offset="100%" stop-color="#0b0805"/>
+  </radialGradient>
+</defs>
+  <rect width="1840" height="1000" fill="url(#bg)"/>
+
+  <!-- ornamental border -->
+  <rect x="46" y="46" width="1748" height="908" rx="26" fill="none" stroke="url(#gold)" stroke-width="3" opacity="0.85"/>
+  <rect x="62" y="62" width="1716" height="876" rx="20" fill="none" stroke="url(#gold)" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- corner flourishes -->
+  
+    <path d="M 0 70 Q 0 0 70 0" fill="none" stroke="url(#gold)" stroke-width="2.5" opacity="0.8" transform="translate(80,80) scale(1,1)"/>
+    <circle cx="0" cy="0" r="4" fill="url(#gold)" transform="translate(80,80)"/>
+    <path d="M 0 70 Q 0 0 70 0" fill="none" stroke="url(#gold)" stroke-width="2.5" opacity="0.8" transform="translate(1760,80) scale(-1,1)"/>
+    <circle cx="0" cy="0" r="4" fill="url(#gold)" transform="translate(1760,80)"/>
+    <path d="M 0 70 Q 0 0 70 0" fill="none" stroke="url(#gold)" stroke-width="2.5" opacity="0.8" transform="translate(80,920) scale(1,-1)"/>
+    <circle cx="0" cy="0" r="4" fill="url(#gold)" transform="translate(80,920)"/>
+    <path d="M 0 70 Q 0 0 70 0" fill="none" stroke="url(#gold)" stroke-width="2.5" opacity="0.8" transform="translate(1760,920) scale(-1,-1)"/>
+    <circle cx="0" cy="0" r="4" fill="url(#gold)" transform="translate(1760,920)"/>
+
+  <!-- emblem framing ring -->
+  <circle cx="920" cy="360" r="195" fill="none" stroke="url(#gold)" stroke-width="2" opacity="0.55"/>
+  <circle cx="920" cy="360" r="205" fill="none" stroke="url(#gold)" stroke-width="1" opacity="0.3"/>
+
+  <!-- cloche dome -->
+  <g transform="translate(920, 360)">
+    <circle cx="0" cy="-118" r="13" fill="url(#gold)"/>
+    <rect x="-3" y="-112" width="6" height="14" fill="url(#gold)"/>
+    <path d="M -125 0 C -125 -78 -60 -98 0 -98 C 60 -98 125 -78 125 0 Z" fill="url(#gold)"/>
+    <rect x="-150" y="2" width="300" height="16" rx="8" fill="url(#gold)"/>
+  </g>
+
+  <!-- crossed cutlery beneath dome -->
+  <g transform="translate(920, 510) scale(0.82)">
+    <g transform="rotate(24)">
+  <g>
+    <rect x="-7" y="-30" width="14" height="118" rx="7" fill="url(#gold)"/>
+    <path d="M -9 -30 L -9 -120 Q -9 -150 3 -150 Q 9 -140 9 -110 L 9 -30 Z" fill="url(#gold)"/>
+  </g></g>
+    <g transform="rotate(-24)">
+  <g>
+    <rect x="-7" y="-30" width="14" height="118" rx="7" fill="url(#gold)"/>
+    <path d="M -16 -84 Q -16 -60 0 -56 Q 16 -60 16 -84 Z" fill="url(#gold)"/>
+    <rect x="-15" y="-150" width="6" height="70" rx="3" fill="url(#gold)"/>
+    <rect x="-3" y="-150" width="6" height="70" rx="3" fill="url(#gold)"/>
+    <rect x="9" y="-150" width="6" height="70" rx="3" fill="url(#gold)"/>
+  </g></g>
+  </g>
+
+  <!-- wordmark -->
+  <text x="920" y="720" text-anchor="middle" font-family="DejaVu Serif" font-weight="bold"
+        font-size="168" letter-spacing="14" fill="url(#goldText)">AL-RISALA</text>
+
+  <!-- divider + subtitle -->
+  <line x1="660" y1="788" x2="850" y2="788" stroke="url(#gold)" stroke-width="2" opacity="0.7"/>
+  <line x1="990" y1="788" x2="1180" y2="788" stroke="url(#gold)" stroke-width="2" opacity="0.7"/>
+  <circle cx="920" cy="788" r="5" fill="url(#gold)" opacity="0.9"/>
+  <text x="920" y="838" text-anchor="middle" font-family="DejaVu Serif"
+        font-size="46" letter-spacing="22" fill="url(#goldText)" opacity="0.95">RESTAURANT</text>
+</svg>
