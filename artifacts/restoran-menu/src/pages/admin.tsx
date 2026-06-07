@@ -1462,6 +1462,9 @@ function SettingsTab({ lang }: { lang: AdminLang }) {
   const queryClient = useQueryClient();
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoMsg, setLogoMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [waiterForm, setWaiterForm] = useState({ next: "", confirm: "" });
+  const [waiterMsg, setWaiterMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [waiterSaving, setWaiterSaving] = useState(false);
 
   const { data: settingsData } = useQuery<{ logo: string | null; restaurantName: string }>({
     queryKey: ["settings"],
@@ -1515,6 +1518,26 @@ function SettingsTab({ lang }: { lang: AdminLang }) {
       setLogoMsg({ ok: false, text: t("logoFailed", lang) });
     } finally {
       setLogoUploading(false);
+    }
+  }
+
+  async function changeWaiterPin(e: React.FormEvent) {
+    e.preventDefault();
+    setWaiterMsg(null);
+    if (waiterForm.next.length < 4) { setWaiterMsg({ ok: false, text: t("pinMinLen", lang) }); return; }
+    if (waiterForm.next !== waiterForm.confirm) { setWaiterMsg({ ok: false, text: t("pinMismatch", lang) }); return; }
+    setWaiterSaving(true);
+    const res = await fetch(`${API_BASE}/settings`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${getToken()}` },
+      body: JSON.stringify({ newWaiterPin: waiterForm.next }),
+    });
+    setWaiterSaving(false);
+    if (res.ok) {
+      setWaiterMsg({ ok: true, text: t("pinChanged", lang) });
+      setWaiterForm({ next: "", confirm: "" });
+    } else {
+      setWaiterMsg({ ok: false, text: t("pinWrong", lang) });
     }
   }
 
@@ -1609,6 +1632,72 @@ function SettingsTab({ lang }: { lang: AdminLang }) {
             PNG, JPG, GIF — max 10 MB
           </p>
         </div>
+      </div>
+
+      {/* ── Waiter PIN card ── */}
+      <div className="mt-8 mb-6">
+        <h2 className="text-lg font-bold text-[#1B2A4A] flex items-center gap-2">
+          <KeyRound className="w-5 h-5 text-[#C1440E]" />
+          {t("waiterPinLabel", lang)}
+        </h2>
+        <p className="text-sm text-slate-400 mt-0.5 ml-7">
+          {lang === "en" ? "PIN used by waiters to access the waiter panel" : "አስተናጋጆች ወደ ፓነሉ ለመግባት የሚጠቀሙት PIN"}
+        </p>
+      </div>
+
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
+        <form onSubmit={changeWaiterPin} className="p-6 space-y-4">
+
+          <div>
+            <label className="text-xs font-semibold text-slate-500 mb-2 block uppercase tracking-wide">{t("newPin", lang)}</label>
+            <input
+              type="password"
+              inputMode="numeric"
+              value={waiterForm.next}
+              onChange={e => setWaiterForm(f => ({ ...f, next: e.target.value.replace(/\D/g, "").slice(0, 12) }))}
+              placeholder="• • • •"
+              className="w-full bg-slate-50 border-2 border-slate-200 focus:border-[#C1440E] rounded-2xl px-4 py-3.5 text-center text-2xl tracking-[0.5em] font-bold text-[#1B2A4A] outline-none transition-colors placeholder:text-slate-300 placeholder:tracking-[0.4em] placeholder:text-xl"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-semibold text-slate-500 mb-2 block uppercase tracking-wide">{t("confirmNewPin", lang)}</label>
+            <input
+              type="password"
+              inputMode="numeric"
+              value={waiterForm.confirm}
+              onChange={e => setWaiterForm(f => ({ ...f, confirm: e.target.value.replace(/\D/g, "").slice(0, 12) }))}
+              placeholder="• • • •"
+              className="w-full bg-slate-50 border-2 border-slate-200 focus:border-[#C1440E] rounded-2xl px-4 py-3.5 text-center text-2xl tracking-[0.5em] font-bold text-[#1B2A4A] outline-none transition-colors placeholder:text-slate-300 placeholder:tracking-[0.4em] placeholder:text-xl"
+            />
+          </div>
+
+          <AnimatePresence>
+            {waiterMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-medium",
+                  waiterMsg.ok ? "bg-green-50 text-green-700 border border-green-100" : "bg-red-50 text-red-600 border border-red-100"
+                )}
+              >
+                {waiterMsg.ok ? <Check className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
+                {waiterMsg.text}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <button
+            type="submit"
+            disabled={waiterSaving || !waiterForm.next || !waiterForm.confirm}
+            className="w-full bg-[#1B2A4A] hover:bg-[#243760] active:scale-[0.98] text-white font-semibold py-3.5 rounded-2xl text-sm transition-all disabled:opacity-40 flex items-center justify-center gap-2 shadow-lg shadow-[#1B2A4A]/20 touch-manipulation"
+          >
+            {waiterSaving
+              ? <><Circle className="w-4 h-4 animate-spin" />{t("changing", lang)}</>
+              : <><Save className="w-4 h-4" />{t("changePin", lang)}</>
+            }
+          </button>
+        </form>
       </div>
     </div>
   );
