@@ -233,13 +233,15 @@ function MenuContent({ tableId }: { tableId: string }) {
           </div>
 
           {restaurantLogo ? (
-            <div className="relative w-full overflow-hidden" style={{ aspectRatio: "2.45 / 1", maxHeight: "300px" }}>
-              <img
-                key={restaurantLogo}
-                src={restaurantLogo}
-                alt="AL-RISALA"
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }}
-              />
+            <div className="relative w-full overflow-hidden flex items-center justify-center" style={{ maxHeight: "300px", minHeight: "288px", background: "#160f08" }}>
+              <div className="relative w-full" style={{ aspectRatio: "2.6 / 1" }}>
+                <img
+                  key={restaurantLogo}
+                  src={restaurantLogo}
+                  alt="AL-RISALA"
+                  style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }}
+                />
+              </div>
             </div>
           ) : (
             <>
