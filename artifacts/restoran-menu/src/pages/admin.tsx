@@ -1557,21 +1557,29 @@ function SettingsTab({ lang }: { lang: AdminLang }) {
       <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
 
         {/* Preview area */}
-        <div className="relative bg-gradient-to-br from-[#0f172a] to-[#1e293b] px-8 py-10 flex flex-col items-center gap-4">
+        <div className="relative bg-gradient-to-br from-[#0f172a] to-[#1e293b] px-8 py-10 flex flex-col items-center gap-3">
           <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "repeating-linear-gradient(45deg,transparent,transparent 10px,white 10px,white 11px)" }} />
-          <div className="relative w-32 h-32 rounded-2xl bg-white/10 border-2 border-white/20 flex items-center justify-center overflow-hidden shadow-2xl">
-            {currentLogo ? (
-              <img src={currentLogo} alt="logo" className="w-full h-full object-contain p-2" />
-            ) : (
-              <div className="flex flex-col items-center gap-2 text-white/30">
-                <ImageIcon className="w-10 h-10" />
-                <span className="text-[10px] font-semibold tracking-widest uppercase">No Logo</span>
-              </div>
-            )}
-          </div>
-          {currentLogo && (
-            <p className="relative text-white/40 text-xs tracking-widest uppercase font-semibold">AL-RISALA</p>
+          <p className="relative text-white/30 text-[10px] tracking-[0.3em] uppercase font-semibold mb-1">
+            {lang === "en" ? "Preview" : "ቅድሚያ ዕይታ"}
+          </p>
+          {currentLogo ? (
+            <div className="relative w-full flex items-center justify-center" style={{ minHeight: "96px" }}>
+              <img
+                key={currentLogo}
+                src={currentLogo}
+                alt="logo"
+                className="max-w-[240px] max-h-[96px] w-auto h-auto object-contain drop-shadow-2xl"
+              />
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-2 text-white/25 py-4">
+              <ImageIcon className="w-12 h-12" />
+              <span className="text-[11px] font-semibold tracking-widest uppercase">
+                {t("noLogo", lang)}
+              </span>
+            </div>
           )}
+          <p className="relative text-[#D4AF37]/50 text-[10px] tracking-[0.35em] font-bold mt-1">الرسالة</p>
         </div>
 
         {/* Actions */}

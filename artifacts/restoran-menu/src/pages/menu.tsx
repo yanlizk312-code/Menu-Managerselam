@@ -186,9 +186,9 @@ function MenuContent({ tableId }: { tableId: string }) {
       )}
 
       <header className="sticky top-0 z-20 border-b border-border/40 backdrop-blur-xl bg-background/95">
-        <div className="relative w-full flex flex-col items-center justify-center py-8 px-6 overflow-hidden" style={{ minHeight: "160px" }}>
+        <div className="relative w-full flex flex-col items-center justify-center py-6 px-6 overflow-hidden" style={{ minHeight: restaurantLogo ? "200px" : "160px" }}>
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=65&fit=crop&auto=format')" }} />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(10,20,45,0.82) 0%, rgba(42,16,4,0.80) 55%, rgba(10,5,2,0.88) 100%)" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(10,20,45,0.85) 0%, rgba(42,16,4,0.83) 55%, rgba(10,5,2,0.90) 100%)" }} />
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-transparent" />
 
@@ -226,16 +226,16 @@ function MenuContent({ tableId }: { tableId: string }) {
           </div>
 
           {restaurantLogo ? (
-            <div className="relative flex flex-col items-center gap-2">
-              <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl shadow-black/30 flex items-center justify-center">
+            <div className="relative flex flex-col items-center gap-3 w-full">
+              <div className="w-full flex items-center justify-center" style={{ minHeight: "140px" }}>
                 <img
+                  key={restaurantLogo}
                   src={restaurantLogo}
                   alt="AL-RISALA"
-                  className="w-full h-full object-contain p-1.5"
+                  className="object-contain drop-shadow-2xl"
+                  style={{ maxWidth: "min(320px, 80vw)", maxHeight: "140px", width: "auto", height: "auto" }}
                 />
               </div>
-              <h1 className="relative font-serif text-xl font-bold text-white tracking-[0.15em] uppercase drop-shadow-lg">AL-RISALA</h1>
-              <p className="relative text-[#D4AF37]/90 text-xs font-bold tracking-[0.3em]">الرسالة</p>
             </div>
           ) : (
             <>
