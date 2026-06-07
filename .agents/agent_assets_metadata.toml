@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "ogOOIeJ1qAYfuq9-IiMoi"
+uri = "file://attached_assets/food-bg.png"
+type = "image"
+title = "generated_image"
