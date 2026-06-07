@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { store, authMiddleware } from "./store.js";
+import { saveConfig } from "../lib/persist.js";
 
 const router = Router();
 
@@ -19,8 +20,15 @@ router.patch("/settings", authMiddleware, (req, res) => {
     newWaiterPin: string;
   }>;
 
-  if (body.restaurantName !== undefined) store.settings.restaurantName = body.restaurantName;
-  if (body.logo !== undefined) store.settings.logo = body.logo;
+  if (body.restaurantName !== undefined) {
+    store.settings.restaurantName = body.restaurantName;
+    saveConfig({ restaurantName: body.restaurantName });
+  }
+
+  if (body.logo !== undefined) {
+    store.settings.logo = body.logo;
+    saveConfig({ logo: body.logo });
+  }
 
   if (body.newAdminPin !== undefined) {
     if (body.adminPin !== store.settings.adminPin) {
