@@ -1,19 +1,15 @@
 import { Router } from "express";
 import { store, authMiddleware, type Table } from "./store.js";
-import { saveConfig } from "../lib/persist.js";
+import { dbLoadTables, dbSaveTable, dbDeleteTable } from "../lib/db.js";
 import { nanoid } from "nanoid";
 
 const router = Router();
-
-function persistTables() {
-  saveConfig({ tables: store.tables });
-}
 
 router.get("/tables", (req, res) => {
   res.json(store.tables);
 });
 
-router.post("/tables", authMiddleware, (req, res) => {
+router.post("/tables", authMiddleware, async (req, res) => {
   const body = req.body as Partial<Table> & { number?: number; location?: string };
   const table: Table = {
     id: nanoid(8),
@@ -23,32 +19,46 @@ router.post("/tables", authMiddleware, (req, res) => {
     activeOrderCount: 0,
   };
   store.tables.push(table);
-  persistTables();
+  await dbSaveTable(table);
   res.status(201).json(table);
 });
 
-router.put("/tables/:id", authMiddleware, (req, res) => {
+router.put("/tables/:id", authMiddleware, async (req, res) => {
   const idx = store.tables.findIndex(t => t.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: "Not found" });
   store.tables[idx] = { ...store.tables[idx], ...req.body, id: req.params.id };
-  persistTables();
+  await dbSaveTable(store.tables[idx]);
   res.json(store.tables[idx]);
 });
 
-router.patch("/tables/:id", authMiddleware, (req, res) => {
+router.patch("/tables/:id", authMiddleware, async (req, res) => {
   const idx = store.tables.findIndex(t => t.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: "Not found" });
   store.tables[idx] = { ...store.tables[idx], ...req.body, id: req.params.id };
-  persistTables();
+  await dbSaveTable(store.tables[idx]);
   res.json(store.tables[idx]);
 });
 
-router.delete("/tables/:id", authMiddleware, (req, res) => {
+router.delete("/tables/:id", authMiddleware, async (req, res) => {
   const idx = store.tables.findIndex(t => t.id === req.params.id);
   if (idx === -1) return res.status(404).json({ error: "Not found" });
   store.tables.splice(idx, 1);
-  persistTables();
+  await dbDeleteTable(req.params.id);
   res.status(204).end();
 });
+
+export async function initTables() {
+  try {
+    const rows = await dbLoadTables();
+    store.tables = rows;
+    req_log(`Loaded ${rows.length} tables from Supabase`);
+  } catch (e) {
+    // Supabase tables not yet created — will work from memory
+  }
+}
+
+function req_log(msg: string) {
+  process.stdout.write(`[tables] ${msg}\n`);
+}
 
 export default router;
