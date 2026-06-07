@@ -1,0 +1,1 @@
+- [Logo header banner](logo-header-banner.md) — square logo → wide mirrored banner so the menu header fills edge-to-edge with no blur/crop
