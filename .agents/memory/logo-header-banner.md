@@ -30,7 +30,10 @@ ratio = taller header; text never changes as long as ratio stays >= ~2.0.
 - `sharp` is NOT an app dep: `pnpm add -w sharp`, run `node make-banner.mjs`, then
   `pnpm remove -w sharp`. Only DejaVu Serif/Sans fonts exist (no Arabic). generateImage renders
   text unreliably — that's why text is SVG vector, not AI.
-- Upload result: `curl -s -X POST http://localhost:80/api/upload/logo -H "Authorization: Bearer admin-token-alrisala" -F "image=@attached_assets/al-risala-logo.png"`
+- Output is now `.webp` (quality 80, ~138KB, was 195KB JPEG / 3.2MB PNG). The upload route
+  (`db.ts` uploadLogoToSupabase/uploadImageToSupabase) maps `.webp` → `image/webp` content-type;
+  if you add new formats, extend those ternaries or Supabase serves the wrong MIME.
+- Upload result: `curl -s -X POST http://localhost:80/api/upload/logo -H "Authorization: Bearer admin-token-alrisala" -F "image=@attached_assets/al-risala-logo.webp"`
   → Supabase logos bucket, persists to app_settings key `logo`, returns a `?v=timestamp` cache-buster.
 
 **Why:** user rejected blur-fill and bright photos; settled on darkened food + large gold text,

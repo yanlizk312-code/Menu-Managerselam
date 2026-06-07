@@ -79,7 +79,7 @@ const food = await sharp("attached_assets/food-bg.png")
 
 await sharp(food)
   .composite([{ input: Buffer.from(overlay), top: 0, left: 0 }])
-  .jpeg({ quality: 82, mozjpeg: true })
-  .toFile("attached_assets/al-risala-logo.jpg");
+  .webp({ quality: 80 })
+  .toFile("attached_assets/al-risala-logo.webp");
 
-console.log("banner written: 1840x920 (jpeg)");
+console.log("banner written: 1840x920 (webp)");

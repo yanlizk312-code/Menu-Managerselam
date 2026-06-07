@@ -15,7 +15,10 @@ export async function dbSetSetting(key: string, value: string | null): Promise<v
 // ─── Tables ───────────────────────────────────────────────────────────────────
 
 export async function dbLoadTables(): Promise<Table[]> {
-  const { data, error } = await supabase.from("app_tables").select("*").order("number", { ascending: true });
+  const { data, error } = await supabase
+    .from("app_tables")
+    .select("id, number, location, status, active_order_count")
+    .order("number", { ascending: true });
   if (error || !data) return [];
   return data.map(r => ({
     id: r.id, number: r.number, location: r.location ?? "",
@@ -37,7 +40,10 @@ export async function dbDeleteTable(id: string): Promise<void> {
 // ─── Categories ───────────────────────────────────────────────────────────────
 
 export async function dbLoadCategories(): Promise<Category[]> {
-  const { data, error } = await supabase.from("categories").select("*").order("sort_order", { ascending: true });
+  const { data, error } = await supabase
+    .from("categories")
+    .select("id, name_en, name_am, sort_order")
+    .order("sort_order", { ascending: true });
   if (error || !data) return [];
   return data.map(r => ({
     id: r.id,
@@ -64,7 +70,10 @@ export async function dbSeedCategories(cats: Category[]): Promise<void> {
 // ─── Menu Items ───────────────────────────────────────────────────────────────
 
 export async function dbLoadMenu(): Promise<MenuItem[]> {
-  const { data, error } = await supabase.from("menu_items").select("*").order("sort_order", { ascending: true });
+  const { data, error } = await supabase
+    .from("menu_items")
+    .select("id, name_en, name_am, description_en, description_am, price, category, image, hidden, sort_order")
+    .order("sort_order", { ascending: true });
   if (error || !data) return [];
   return data.map(r => ({
     id: r.id,
@@ -108,7 +117,7 @@ export async function dbSeedMenu(items: MenuItem[]): Promise<void> {
 export async function uploadImageToSupabase(buffer: Buffer, ext: string, prefix: string): Promise<string> {
   const filename = `${prefix}-${Date.now()}${ext}`;
   const { error } = await supabase.storage.from("menu-images").upload(filename, buffer, {
-    contentType: ext === ".png" ? "image/png" : ext === ".gif" ? "image/gif" : "image/jpeg",
+    contentType: ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : ext === ".gif" ? "image/gif" : "image/jpeg",
     upsert: true,
   });
   if (error) throw new Error(`Storage upload failed: ${error.message}`);
@@ -119,7 +128,7 @@ export async function uploadImageToSupabase(buffer: Buffer, ext: string, prefix:
 export async function uploadLogoToSupabase(buffer: Buffer, ext: string): Promise<string> {
   const filename = `restaurant-logo${ext}`;
   const { error } = await supabase.storage.from("logos").upload(filename, buffer, {
-    contentType: ext === ".png" ? "image/png" : "image/jpeg",
+    contentType: ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg",
     upsert: true,
   });
   if (error) throw new Error(`Storage upload failed: ${error.message}`);

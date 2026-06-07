@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo, useCallback, memo } from "react";
 import { Bell, CheckCircle, X, Search, SlidersHorizontal, ArrowUpDown, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useParams } from "wouter";
@@ -44,7 +44,7 @@ const INITIAL_BUNDLE: Bundle = {
   settings: { logo: null, restaurantName: "AL-RISALA" },
 };
 
-function ItemDetailModal({ item, lang, onClose }: { item: MenuItem; lang: Lang; onClose: () => void }) {
+const ItemDetailModal = memo(function ItemDetailModal({ item, lang, onClose }: { item: MenuItem; lang: Lang; onClose: () => void }) {
   const gl = (map: LangMap | undefined) => map ? (map[lang] || map.en || "") : "";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={onClose}>
@@ -57,6 +57,7 @@ function ItemDetailModal({ item, lang, onClose }: { item: MenuItem; lang: Lang; 
         <div className="relative w-full aspect-[4/3] bg-stone-100 overflow-hidden">
           {item.image ? (
             <img src={item.image} alt={gl(item.name)}
+              width={640} height={480}
               className="w-full h-full object-cover"
               style={{ filter: "brightness(1.06) saturate(1.1)" }}
               loading="eager" decoding="async" />
@@ -81,7 +82,7 @@ function ItemDetailModal({ item, lang, onClose }: { item: MenuItem; lang: Lang; 
       </div>
     </div>
   );
-}
+});
 
 export default function MenuPage() {
   const params = useParams();
@@ -139,26 +140,38 @@ function MenuContent({ tableId }: { tableId: string }) {
     onSuccess: () => { setWaiterCalled(true); setTimeout(() => setWaiterCalled(false), 4000); },
   });
 
-  const allCategory: Category = { id: "all", name: { en: "All", am: "ሁሉም" }, order: 0 };
-  const allTabs = [allCategory, ...categories];
-  const gl = (map: LangMap | undefined) => map ? (map[lang] || map.en || "") : "";
+  const gl = useCallback(
+    (map: LangMap | undefined) => (map ? map[lang] || map.en || "" : ""),
+    [lang],
+  );
+
+  const closeModal = useCallback(() => setSelectedItem(null), []);
+
+  const allTabs = useMemo(
+    () => [{ id: "all", name: { en: "All", am: "ሁሉም" }, order: 0 } as Category, ...categories],
+    [categories],
+  );
 
   const query = searchQuery.trim().toLowerCase();
-  const filteredItems = menuData
-    .filter(item => {
-      const inCategory = activeCategory === "all" || item.category === activeCategory;
-      if (!inCategory) return false;
-      if (!query) return true;
-      return (
-        gl(item.name).toLowerCase().includes(query) ||
-        gl(item.description).toLowerCase().includes(query)
-      );
-    })
-    .sort((a, b) => {
-      if (sortOrder === "asc") return a.price - b.price;
-      if (sortOrder === "desc") return b.price - a.price;
-      return 0;
-    });
+  const filteredItems = useMemo(
+    () =>
+      menuData
+        .filter(item => {
+          const inCategory = activeCategory === "all" || item.category === activeCategory;
+          if (!inCategory) return false;
+          if (!query) return true;
+          return (
+            gl(item.name).toLowerCase().includes(query) ||
+            gl(item.description).toLowerCase().includes(query)
+          );
+        })
+        .sort((a, b) => {
+          if (sortOrder === "asc") return a.price - b.price;
+          if (sortOrder === "desc") return b.price - a.price;
+          return 0;
+        }),
+    [menuData, activeCategory, query, sortOrder, gl],
+  );
 
   const isFiltered = sortOrder !== "default";
 
@@ -182,7 +195,7 @@ function MenuContent({ tableId }: { tableId: string }) {
       `}</style>
 
       {selectedItem && (
-        <ItemDetailModal item={selectedItem} lang={lang} onClose={() => setSelectedItem(null)} />
+        <ItemDetailModal item={selectedItem} lang={lang} onClose={closeModal} />
       )}
 
       <header className="sticky top-0 z-20 border-b border-border/40 backdrop-blur-xl bg-background/95">
@@ -238,6 +251,11 @@ function MenuContent({ tableId }: { tableId: string }) {
                 key={restaurantLogo}
                 src={restaurantLogo}
                 alt="AL-RISALA"
+                width={1840}
+                height={920}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }}
               />
             </div>
@@ -364,6 +382,7 @@ function MenuContent({ tableId }: { tableId: string }) {
         <div className="grid grid-cols-2 min-[560px]:grid-cols-3 gap-3 min-[400px]:gap-4 sm:gap-5 items-stretch">
           {filteredItems.map((item, index) => {
             const eager = index < 6;
+            const highPriority = index < 2;
             return (
               <button
                 key={item.id}
@@ -374,6 +393,7 @@ function MenuContent({ tableId }: { tableId: string }) {
                 {/* Square-ish image — matches reference design */}
                 <div className="relative overflow-hidden bg-muted w-full flex-shrink-0" style={{ paddingBottom: "88%" }}>
                   <img src={item.image} alt={gl(item.name)}
+                    width={300} height={264}
                     className="absolute inset-0 w-full h-full object-cover"
                     style={{
                       objectPosition: "center 35%",
@@ -381,7 +401,7 @@ function MenuContent({ tableId }: { tableId: string }) {
                       transform: "scale(1.04)",
                     }}
                     loading={eager ? "eager" : "lazy"}
-                    fetchPriority={eager ? "high" : "auto"}
+                    fetchPriority={highPriority ? "high" : "auto"}
                     decoding="async" />
                 </div>
                 <div className="px-3 pt-2.5 pb-3 flex flex-col flex-1 gap-1">
