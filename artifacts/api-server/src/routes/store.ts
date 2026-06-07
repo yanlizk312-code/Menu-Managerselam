@@ -13,7 +13,7 @@ const persisted = loadConfig();
 export const store = {
   menu: [...INITIAL_MENU] as MenuItem[],
   categories: [...INITIAL_CATEGORIES] as Category[],
-  tables: [] as Table[],
+  tables: (persisted.tables ?? []) as Table[],
   waiterCalls: new Map<string, WaiterCall>(),
   settings: {
     restaurantName: persisted.restaurantName ?? "AL-RISALA",
