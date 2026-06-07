@@ -1,4 +1,5 @@
 import { INITIAL_CATEGORIES, INITIAL_MENU } from "./data/initial-data.js";
+import { loadConfig } from "../lib/persist.js";
 
 export interface LangMap { en: string; am: string; }
 export interface MenuItem { id: string; name: LangMap; description: LangMap; price: number; category: string; image: string; hidden: boolean; }
@@ -7,14 +8,16 @@ export interface Table { id: string; number: number; location: string; status: s
 export interface WaiterCall { tableId: string; count: number; lastCalledAt: number; }
 export interface Settings { restaurantName: string; logo: string | null; adminPin: string; waiterPin: string; }
 
+const persisted = loadConfig();
+
 export const store = {
   menu: [...INITIAL_MENU] as MenuItem[],
   categories: [...INITIAL_CATEGORIES] as Category[],
   tables: [] as Table[],
   waiterCalls: new Map<string, WaiterCall>(),
   settings: {
-    restaurantName: "AL-RISALA",
-    logo: null,
+    restaurantName: persisted.restaurantName ?? "AL-RISALA",
+    logo: persisted.logo ?? null,
     adminPin: "1234",
     waiterPin: "1234",
   } as Settings,

@@ -225,16 +225,30 @@ function MenuContent({ tableId }: { tableId: string }) {
             )}
           </div>
 
-          <p className="relative text-[#D4AF37]/70 text-[10px] tracking-[0.35em] font-bold mb-2">مطعم</p>
-
-          <h1 className="relative font-serif text-3xl font-bold text-white tracking-[0.15em] uppercase drop-shadow-lg">AL-RISALA</h1>
-          <p className="relative text-[#D4AF37]/90 text-sm font-bold tracking-[0.3em] mt-1">الرسالة</p>
-
-          <div className="relative flex items-center gap-3 mt-3 w-48">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#D4AF37]/60" />
-            <span className="text-[#D4AF37]/80 text-[9px] tracking-[0.2em] font-semibold">✦</span>
-            <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#D4AF37]/60" />
-          </div>
+          {restaurantLogo ? (
+            <div className="relative flex flex-col items-center gap-2">
+              <div className="w-24 h-24 rounded-2xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl shadow-black/30 flex items-center justify-center">
+                <img
+                  src={restaurantLogo}
+                  alt="AL-RISALA"
+                  className="w-full h-full object-contain p-1.5"
+                />
+              </div>
+              <h1 className="relative font-serif text-xl font-bold text-white tracking-[0.15em] uppercase drop-shadow-lg">AL-RISALA</h1>
+              <p className="relative text-[#D4AF37]/90 text-xs font-bold tracking-[0.3em]">الرسالة</p>
+            </div>
+          ) : (
+            <>
+              <p className="relative text-[#D4AF37]/70 text-[10px] tracking-[0.35em] font-bold mb-2">مطعم</p>
+              <h1 className="relative font-serif text-3xl font-bold text-white tracking-[0.15em] uppercase drop-shadow-lg">AL-RISALA</h1>
+              <p className="relative text-[#D4AF37]/90 text-sm font-bold tracking-[0.3em] mt-1">الرسالة</p>
+              <div className="relative flex items-center gap-3 mt-3 w-48">
+                <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#D4AF37]/60" />
+                <span className="text-[#D4AF37]/80 text-[9px] tracking-[0.2em] font-semibold">✦</span>
+                <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#D4AF37]/60" />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Category tabs */}
