@@ -505,9 +505,9 @@ function MenuTab({ lang }: { lang: AdminLang }) {
     return catId === "all" ? src.length : src.filter(m => m.category === catId).length;
   }
 
-  const itemName = (item: MenuItem) => item.name?.[lang] || item.name?.en || item.name?.tr || "";
-  const itemDesc = (item: MenuItem) => item.description?.[lang] || item.description?.en || item.description?.tr || "";
-  const catName  = (cat: Category) => cat.name?.[lang] || cat.name?.en || cat.name?.tr || cat.id;
+  const itemName = (item: MenuItem) => item.name?.[lang] || item.name?.en || "";
+  const itemDesc = (item: MenuItem) => item.description?.[lang] || item.description?.en || "";
+  const catName  = (cat: Category) => cat.name?.[lang] || cat.name?.en || cat.id;
 
   return (
     <div className="flex gap-5 min-h-[70vh]">
@@ -1193,7 +1193,7 @@ function CategoriesTab({ lang }: { lang: AdminLang }) {
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-slate-800 text-sm">{catName(cat)}</p>
                   <p className="text-slate-400 text-xs truncate mt-0.5">
-                    {[cat.name?.en, cat.name?.am, cat.name?.tr, cat.name?.or].filter(Boolean).join("  ·  ")}
+                    {[cat.name?.en, cat.name?.am].filter(Boolean).join("  ·  ")}
                   </p>
                 </div>
                 <div className="flex gap-1 flex-shrink-0">
