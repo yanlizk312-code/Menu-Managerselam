@@ -77,9 +77,14 @@ const food = await sharp("attached_assets/food-bg.png")
   .resize(W, H, { fit: "cover", position: "center" })
   .toBuffer();
 
-await sharp(food)
+const composited = await sharp(food)
   .composite([{ input: Buffer.from(overlay), top: 0, left: 0 }])
-  .webp({ quality: 80 })
+  .png()
+  .toBuffer();
+
+await sharp(composited)
+  .resize(1280)
+  .webp({ quality: 76 })
   .toFile("attached_assets/al-risala-logo.webp");
 
-console.log("banner written: 1840x920 (webp)");
+console.log("banner written: 1280x640 (webp)");

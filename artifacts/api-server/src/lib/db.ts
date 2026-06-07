@@ -130,10 +130,11 @@ export async function uploadLogoToSupabase(buffer: Buffer, ext: string): Promise
   const { error } = await supabase.storage.from("logos").upload(filename, buffer, {
     contentType: ext === ".png" ? "image/png" : ext === ".webp" ? "image/webp" : "image/jpeg",
     upsert: true,
+    cacheControl: "600",
   });
   if (error) throw new Error(`Storage upload failed: ${error.message}`);
   const { data } = supabase.storage.from("logos").getPublicUrl(filename);
-  const publicUrl = `${data.publicUrl}?v=${Date.now()}`;
+  const publicUrl = data.publicUrl;
   await dbSetSetting("logo", publicUrl);
   return publicUrl;
 }

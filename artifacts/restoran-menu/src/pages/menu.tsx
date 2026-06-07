@@ -38,10 +38,12 @@ function writeBundleCache(data: Bundle) {
   try { localStorage.setItem(BUNDLE_KEY, JSON.stringify({ data, ts: Date.now() })); } catch {}
 }
 
+const LOGO_URL = "https://yhnbvdjxsqtctjricdte.supabase.co/storage/v1/object/public/logos/restaurant-logo.webp";
+
 const INITIAL_BUNDLE: Bundle = {
   menu: INITIAL_MENU as unknown as MenuItem[],
   categories: INITIAL_CATEGORIES as unknown as Category[],
-  settings: { logo: null, restaurantName: "AL-RISALA" },
+  settings: { logo: LOGO_URL, restaurantName: "AL-RISALA" },
 };
 
 const ItemDetailModal = memo(function ItemDetailModal({ item, lang, onClose }: { item: MenuItem; lang: Lang; onClose: () => void }) {
