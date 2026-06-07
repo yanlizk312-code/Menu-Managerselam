@@ -186,11 +186,18 @@ function MenuContent({ tableId }: { tableId: string }) {
       )}
 
       <header className="sticky top-0 z-20 border-b border-border/40 backdrop-blur-xl bg-background/95">
-        <div className="relative w-full flex flex-col items-center justify-center py-6 px-6 overflow-hidden" style={{ minHeight: restaurantLogo ? "200px" : "160px" }}>
-          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=65&fit=crop&auto=format')" }} />
-          <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(10,20,45,0.85) 0%, rgba(42,16,4,0.83) 55%, rgba(10,5,2,0.90) 100%)" }} />
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-transparent" />
+        <div className="relative w-full overflow-hidden" style={{ minHeight: restaurantLogo ? "auto" : "160px" }}>
+          {!restaurantLogo && (
+            <>
+              <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=900&q=65&fit=crop&auto=format')" }} />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, rgba(10,20,45,0.85) 0%, rgba(42,16,4,0.83) 55%, rgba(10,5,2,0.90) 100%)" }} />
+            </>
+          )}
+          {restaurantLogo && (
+            <div className="absolute inset-0 bg-[#0f172a]" />
+          )}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-transparent" style={{ zIndex: 10 }} />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/70 to-transparent" style={{ zIndex: 10 }} />
 
           <div className="absolute top-4 right-4 z-50">
             <button
@@ -226,16 +233,13 @@ function MenuContent({ tableId }: { tableId: string }) {
           </div>
 
           {restaurantLogo ? (
-            <div className="relative flex flex-col items-center gap-3 w-full">
-              <div className="w-full flex items-center justify-center" style={{ minHeight: "140px" }}>
-                <img
-                  key={restaurantLogo}
-                  src={restaurantLogo}
-                  alt="AL-RISALA"
-                  className="object-contain drop-shadow-2xl"
-                  style={{ maxWidth: "min(320px, 80vw)", maxHeight: "140px", width: "auto", height: "auto" }}
-                />
-              </div>
+            <div className="relative w-full flex items-center justify-center py-3" style={{ minHeight: "180px", maxHeight: "220px" }}>
+              <img
+                key={restaurantLogo}
+                src={restaurantLogo}
+                alt="AL-RISALA"
+                style={{ width: "100%", height: "180px", objectFit: "contain", display: "block" }}
+              />
             </div>
           ) : (
             <>
