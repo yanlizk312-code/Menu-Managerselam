@@ -233,12 +233,12 @@ function MenuContent({ tableId }: { tableId: string }) {
           </div>
 
           {restaurantLogo ? (
-            <div className="relative w-full flex items-center justify-center py-3" style={{ minHeight: "180px", maxHeight: "220px" }}>
+            <div className="relative w-full" style={{ height: "220px" }}>
               <img
                 key={restaurantLogo}
                 src={restaurantLogo}
                 alt="AL-RISALA"
-                style={{ width: "100%", height: "180px", objectFit: "contain", display: "block" }}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "center", display: "block" }}
               />
             </div>
           ) : (
