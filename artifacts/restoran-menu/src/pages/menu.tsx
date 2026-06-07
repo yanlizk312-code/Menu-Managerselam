@@ -237,13 +237,13 @@ function MenuContent({ tableId }: { tableId: string }) {
               <img
                 src={restaurantLogo}
                 aria-hidden
-                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(28px) brightness(0.45)", transform: "scale(1.2)" }}
+                style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", filter: "blur(10px) brightness(0.92) saturate(1.1)", transform: "scale(1.6)" }}
               />
               <img
                 key={restaurantLogo}
                 src={restaurantLogo}
                 alt="AL-RISALA"
-                style={{ position: "relative", zIndex: 5, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", display: "block", filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5))" }}
+                style={{ position: "relative", zIndex: 5, width: "100%", height: "100%", objectFit: "contain", objectPosition: "center", display: "block", filter: "drop-shadow(0 6px 20px rgba(0,0,0,0.6))" }}
               />
             </div>
           ) : (
