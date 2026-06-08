@@ -8,7 +8,7 @@ import {
   Check, X, Download, LayoutDashboard, Bell,
   Package, AlertCircle,
   Camera, Save, ChevronDown, Search, Eye, EyeOff, Menu as MenuIcon,
-  Circle, Shield, KeyRound, Upload, ImageIcon,
+  Circle, Shield, KeyRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { QRCodeCanvas } from "qrcode.react";
@@ -1459,67 +1459,9 @@ function TablesTab({ lang }: { lang: AdminLang }) {
 
 /* ═══════════════════════ SETTINGS TAB ═══════════════════════ */
 function SettingsTab({ lang }: { lang: AdminLang }) {
-  const queryClient = useQueryClient();
-  const [logoUploading, setLogoUploading] = useState(false);
-  const [logoMsg, setLogoMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [waiterForm, setWaiterForm] = useState({ next: "", confirm: "" });
   const [waiterMsg, setWaiterMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [waiterSaving, setWaiterSaving] = useState(false);
-
-  const { data: settingsData } = useQuery<{ logo: string | null; restaurantName: string }>({
-    queryKey: ["settings"],
-    queryFn: async () => {
-      const res = await fetch(`${API_BASE}/settings`, {
-        headers: { "Authorization": `Bearer ${getToken()}` },
-      });
-      return res.json();
-    },
-    staleTime: 0,
-  });
-
-  const currentLogo = settingsData?.logo ?? null;
-
-  async function uploadLogo(file: File) {
-    setLogoMsg(null);
-    setLogoUploading(true);
-    try {
-      const blob = await resizeImageToBlob(file, 1);
-      const form = new FormData();
-      form.append("image", blob, file.name);
-      const res = await fetch(`${API_BASE}/upload/logo`, {
-        method: "POST",
-        headers: { "Authorization": `Bearer ${getToken()}` },
-        body: form,
-      });
-      if (!res.ok) throw new Error("failed");
-      setLogoMsg({ ok: true, text: t("logoUpdated", lang) });
-      queryClient.invalidateQueries({ queryKey: ["settings"] });
-      queryClient.invalidateQueries({ queryKey: ["bundle"] });
-    } catch {
-      setLogoMsg({ ok: false, text: t("logoFailed", lang) });
-    } finally {
-      setLogoUploading(false);
-    }
-  }
-
-  async function removeLogo() {
-    setLogoMsg(null);
-    setLogoUploading(true);
-    try {
-      await fetch(`${API_BASE}/settings`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${getToken()}` },
-        body: JSON.stringify({ logo: null }),
-      });
-      setLogoMsg({ ok: true, text: t("logoRemoved", lang) });
-      queryClient.invalidateQueries({ queryKey: ["settings"] });
-      queryClient.invalidateQueries({ queryKey: ["bundle"] });
-    } catch {
-      setLogoMsg({ ok: false, text: t("logoFailed", lang) });
-    } finally {
-      setLogoUploading(false);
-    }
-  }
 
   async function changeWaiterPin(e: React.FormEvent) {
     e.preventDefault();
@@ -1543,104 +1485,6 @@ function SettingsTab({ lang }: { lang: AdminLang }) {
 
   return (
     <div className="max-w-xl">
-
-      {/* ── Section heading ── */}
-      <div className="mb-6">
-        <h2 className="text-lg font-bold text-[#1B2A4A] flex items-center gap-2">
-          <ImageIcon className="w-5 h-5 text-[#C1440E]" />
-          {t("logoSection", lang)}
-        </h2>
-        <p className="text-sm text-slate-400 mt-0.5 ml-7">{t("logoDesc", lang)}</p>
-      </div>
-
-      {/* ── Logo card ── */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
-
-        {/* Preview area */}
-        <div className="relative bg-gradient-to-br from-[#0f172a] to-[#1e293b] px-8 py-10 flex flex-col items-center gap-3">
-          <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "repeating-linear-gradient(45deg,transparent,transparent 10px,white 10px,white 11px)" }} />
-          <p className="relative text-white/30 text-[10px] tracking-[0.3em] uppercase font-semibold mb-1">
-            {lang === "en" ? "Preview" : "ቅድሚያ ዕይታ"}
-          </p>
-          {currentLogo ? (
-            <div className="relative w-full flex items-center justify-center" style={{ minHeight: "96px" }}>
-              <img
-                key={currentLogo}
-                src={currentLogo}
-                alt="logo"
-                className="max-w-[240px] max-h-[96px] w-auto h-auto object-contain drop-shadow-2xl"
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col items-center gap-2 text-white/25 py-4">
-              <ImageIcon className="w-12 h-12" />
-              <span className="text-[11px] font-semibold tracking-widest uppercase">
-                {t("noLogo", lang)}
-              </span>
-            </div>
-          )}
-          <p className="relative text-[#D4AF37]/50 text-[10px] tracking-[0.35em] font-bold mt-1">الرسالة</p>
-        </div>
-
-        {/* Actions */}
-        <div className="p-6 space-y-3">
-
-          {/* Status message */}
-          <AnimatePresence>
-            {logoMsg && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-3 rounded-2xl text-sm font-medium",
-                  logoMsg.ok
-                    ? "bg-green-50 text-green-700 border border-green-100"
-                    : "bg-red-50 text-red-600 border border-red-100"
-                )}
-              >
-                {logoMsg.ok
-                  ? <Check className="w-4 h-4 flex-shrink-0" />
-                  : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
-                {logoMsg.text}
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Upload / Change button */}
-          <label className={cn(
-            "w-full flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-2xl text-sm font-semibold cursor-pointer transition-all touch-manipulation",
-            logoUploading
-              ? "bg-slate-100 text-slate-400 pointer-events-none"
-              : "bg-[#C1440E] hover:bg-[#a83a0c] active:scale-[0.98] text-white shadow-lg shadow-[#C1440E]/25"
-          )}>
-            {logoUploading
-              ? <><Circle className="w-4 h-4 animate-spin" />{t("uploading", lang)}</>
-              : <><Upload className="w-4 h-4" />{currentLogo ? t("changeLogo", lang) : t("uploadLogo", lang)}</>
-            }
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              disabled={logoUploading}
-              onChange={e => { const f = e.target.files?.[0]; if (f) uploadLogo(f); e.target.value = ""; }}
-            />
-          </label>
-
-          {/* Remove button */}
-          {currentLogo && (
-            <button
-              onClick={removeLogo}
-              disabled={logoUploading}
-              className="w-full flex items-center justify-center gap-2 py-3 px-5 rounded-2xl text-sm font-semibold border border-slate-200 text-slate-500 hover:border-red-200 hover:text-red-500 hover:bg-red-50/50 transition-all disabled:opacity-40 touch-manipulation"
-            >
-              <X className="w-4 h-4" />{t("removeLogo", lang)}
-            </button>
-          )}
-
-          <p className="text-center text-xs text-slate-400 pt-1">
-            PNG, JPG, GIF — max 10 MB
-          </p>
-        </div>
-      </div>
 
       {/* ── Waiter PIN card ── */}
       <div className="mt-8 mb-6">
