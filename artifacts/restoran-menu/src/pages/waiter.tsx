@@ -211,13 +211,16 @@ function WaiterDashboard({ lang, toggleLang, onLogout }: { lang: WLang; toggleLa
 
   const { data: calls = [], isFetching } = useQuery({
     queryKey: ["waiter-calls"],
-    queryFn: async () => { const r = await fetch(`${API_BASE}/waiter-calls`); return r.ok ? r.json() : []; }
+    queryFn: async () => { const r = await fetch(`${API_BASE}/waiter-calls`); return r.ok ? r.json() : []; },
+    staleTime: 5_000,
+    gcTime: 10 * 60_000,
   });
 
   const { data: tables = [] } = useQuery({
     queryKey: ["waiter-tables"],
     queryFn: async () => { const r = await fetch(`${API_BASE}/tables`); return r.ok ? r.json() : []; },
-    staleTime: 30_000,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
   });
 
   const tableMap = new Map((tables as any[]).map((t: any) => [t.id, t]));

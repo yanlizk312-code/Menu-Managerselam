@@ -7,7 +7,7 @@ import { INITIAL_MENU, INITIAL_CATEGORIES } from "@/lib/initial-data";
 
 const API_BASE = "/api";
 const BUNDLE_KEY = "al_bundle_v2";
-const BUNDLE_TTL = 60_000;
+const BUNDLE_TTL = 30 * 60_000;
 
 type Lang = "en" | "am";
 interface LangMap { en: string; am: string; }
@@ -121,10 +121,10 @@ function MenuContent({ tableId }: { tableId: string }) {
     },
     initialData: cachedBundle ?? INITIAL_BUNDLE,
     initialDataUpdatedAt: cachedBundle ? Date.now() - 5_000 : 0,
-    staleTime: 0,
-    gcTime: 10 * 60_000,
-    refetchInterval: 30_000,
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: false,
     refetchOnReconnect: true,
   });
 

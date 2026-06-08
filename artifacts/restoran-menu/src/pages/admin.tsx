@@ -434,8 +434,8 @@ function AdminDashboard({ onLogout, lang, updateLang }: { onLogout: () => void; 
 
 /* ═══════════════════════ DASHBOARD TAB ═══════════════════════ */
 function DashboardTab({ setActiveTab, lang }: { setActiveTab: (t: Tab) => void; lang: AdminLang }) {
-  const { data: menu = [] }   = useQuery<MenuItem[]>({ queryKey: ["admin-menu"],   queryFn: async () => { const r = await fetch(`${API_BASE}/menu`); return r.json(); }, placeholderData: INITIAL_MENU as unknown as MenuItem[], staleTime: 30_000 });
-  const { data: tables = [] } = useQuery<Table[]>({    queryKey: ["admin-tables"], queryFn: async () => { const r = await authFetch(`${API_BASE}/tables`); return r.json(); }, staleTime: 30_000 });
+  const { data: menu = [] }   = useQuery<MenuItem[]>({ queryKey: ["admin-menu"],   queryFn: async () => { const r = await fetch(`${API_BASE}/menu`); return r.json(); }, placeholderData: INITIAL_MENU as unknown as MenuItem[], staleTime: 5 * 60_000, gcTime: 30 * 60_000 });
+  const { data: tables = [] } = useQuery<Table[]>({    queryKey: ["admin-tables"], queryFn: async () => { const r = await authFetch(`${API_BASE}/tables`); return r.json(); }, staleTime: 5 * 60_000, gcTime: 30 * 60_000 });
 
   const occupiedTables = tables.filter(tb => tb.status === "occupied").length;
 
@@ -1099,7 +1099,7 @@ function CategoriesTab({ lang }: { lang: AdminLang }) {
   const [editCat, setEditCat]   = useState<Category | null>(null);
   const [form, setForm]         = useState({ id: "", en: "", am: "" });
 
-  const { data: categories = [] } = useQuery<Category[]>({ queryKey: ["admin-categories"], queryFn: async () => { const r = await fetch(`${API_BASE}/categories`); return r.json(); }, placeholderData: INITIAL_CATEGORIES as unknown as Category[], staleTime: 30_000 });
+  const { data: categories = [] } = useQuery<Category[]>({ queryKey: ["admin-categories"], queryFn: async () => { const r = await fetch(`${API_BASE}/categories`); return r.json(); }, placeholderData: INITIAL_CATEGORIES as unknown as Category[], staleTime: 5 * 60_000, gcTime: 30 * 60_000 });
   const saveMutation = useMutation({
     mutationFn: async (data: any) => {
       const isEdit = !!editCat;

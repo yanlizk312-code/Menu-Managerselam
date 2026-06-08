@@ -12,7 +12,13 @@ const AdminPage  = lazy(() => import("@/pages/admin"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { refetchOnWindowFocus: false, refetchOnReconnect: false, retry: 1 },
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+      retry: 1,
+      staleTime: 5 * 60_000,
+      gcTime: 30 * 60_000,
+    },
   },
 });
 
